@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.ws.rs.QueryParam;
 import java.util.List;
 
 
@@ -19,8 +20,8 @@ public class UserController {
     @Autowired
     UserService userService;
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(){
-       return new ResponseEntity<>(userService.getUsers(),HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getUsers(@QueryParam("page") int page, @QueryParam("pageSize") int pageSize){
+       return new ResponseEntity<>(userService.getUsers(page, pageSize),HttpStatus.OK);
     }
 
     @PostMapping
