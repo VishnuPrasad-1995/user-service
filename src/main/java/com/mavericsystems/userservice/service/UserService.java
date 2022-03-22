@@ -12,5 +12,6 @@ public interface UserService {
     UserDto createUser(User user);
 
     List<UserDto> getUsers();
+    UserDto updateUser(User user, String userId);
 
 }
