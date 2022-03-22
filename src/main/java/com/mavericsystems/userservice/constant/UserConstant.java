@@ -6,5 +6,7 @@ public final class UserConstant {
         // restrict instantiation
     }
 
-    public final static String deleteCustomer = "User successfully deleted"  ;
+    public static final String DELETEUSER = "User successfully deleted"  ;
+    public static final String USERNOTFOUND = "User not found with id : ";
+    public static final String NOUSERFOUND = "No user data available : ";
 }

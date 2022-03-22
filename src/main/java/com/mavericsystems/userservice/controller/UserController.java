@@ -1,8 +1,8 @@
 package com.mavericsystems.userservice.controller;
 
 import com.mavericsystems.userservice.dto.UserDto;
+import com.mavericsystems.userservice.dto.UserRequest;
 import com.mavericsystems.userservice.exception.CustomCreateUserException;
-import com.mavericsystems.userservice.model.User;
 import com.mavericsystems.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserRequest userRequest){
         try {
-            return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+            return new ResponseEntity<>(userService.createUser(userRequest), HttpStatus.CREATED);
         }
         catch (Exception e){
             throw new CustomCreateUserException("Syntax Error");
@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody User user, @PathVariable("userId") String userId) {
-        return new ResponseEntity<>(userService.updateUser(user, userId), HttpStatus.OK);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserRequest userRequest, @PathVariable("userId") String userId) {
+        return new ResponseEntity<>(userService.updateUser(userRequest, userId), HttpStatus.OK);
     }
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable String userId) {

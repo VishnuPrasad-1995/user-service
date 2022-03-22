@@ -1,22 +1,20 @@
 package com.mavericsystems.userservice.service;
 
-
 import com.mavericsystems.userservice.dto.UserDto;
+import com.mavericsystems.userservice.dto.UserRequest;
+import com.mavericsystems.userservice.exception.UserNotFoundException;
 import com.mavericsystems.userservice.model.User;
 import com.mavericsystems.userservice.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static com.mavericsystems.userservice.constant.UserConstant.deleteCustomer;
+import static com.mavericsystems.userservice.constant.UserConstant.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,51 +23,85 @@ public class UserServiceImpl implements UserService {
     UserRepo userRepo;
 
     @Override
-    public UserDto createUser(User user) {
-        User user1 =  userRepo.save(user);
+    public UserDto createUser(UserRequest userRequest) {
+        User user1 = new User();
+        user1.setFirstName(userRequest.getFirstName());
+        user1.setLastName(userRequest.getLastName());
+        user1.setMiddleName(userRequest.getMiddleName());
+        user1.setPhoneNumber(userRequest.getPhoneNumber());
+        user1.setEmail(userRequest.getEmail());
+        user1.setDateOfBirth(userRequest.getDateOfBirth());
+        user1.setGender(userRequest.getGender());
+        user1.setEmployeeNumber(userRequest.getEmployeeNumber());
+        user1.setBloodGroup(userRequest.getBloodGroup());
+        user1.setPassword(userRequest.getPassword());
+        user1 = userRepo.save(user1);
         return new UserDto(user1.getId(), user1.getFirstName(),user1.getLastName(),user1.getMiddleName(),user1.getPhoneNumber(),user1.getEmail(),user1.getDateOfBirth(),user1.getEmployeeNumber(),user1.getBloodGroup(),user1.getGender());
 
     }
 
     @Override
     public List<UserDto> getUsers(int page, int pageSize) {
-       Page<User> users= userRepo.findAll(PageRequest.of(page, pageSize));
-       List<UserDto> userDtos = new ArrayList<>();
-        for(User user1 : users){
-            userDtos.add(new UserDto(user1.getId(), user1.getFirstName(),user1.getLastName(),user1.getMiddleName(),user1.getPhoneNumber(),user1.getEmail(),user1.getDateOfBirth(),user1.getEmployeeNumber(),user1.getBloodGroup(),user1.getGender()));
-        }
-        return userDtos;
+
+            Page<User> users = userRepo.findAll(PageRequest.of(page, pageSize));
+            List<UserDto> userDtoList = new ArrayList<>();
+            for (User user1 : users) {
+                userDtoList.add(new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender()));
+            }
+            if(userDtoList.isEmpty()){
+                throw new UserNotFoundException(NOUSERFOUND);
+            }
+            return userDtoList;
+
     }
 
     @Override
     public String deleteUser(String userId) {
-        userRepo.deleteById(userId);
-        return deleteCustomer;
+        try {
+            userRepo.deleteById(userId);
+            return DELETEUSER;
+        }
+        catch (Exception e){
+            throw new UserNotFoundException(USERNOTFOUND + userId);
+        }
+
     }
 
     @Override
-    public UserDto updateUser(User user, String userId) {
+    public UserDto updateUser(UserRequest userRequest, String userId) {
 
-        User user1 = userRepo.findById(userId).get();
-        user1.setFirstName(user.getFirstName());
-        user1.setLastName(user.getLastName());
-        user1.setMiddleName(user.getMiddleName());
-        user1.setPhoneNumber(user.getPhoneNumber());
-        user1.setEmail(user.getEmail());
-        user1.setDateOfBirth(user.getDateOfBirth());
-        user1.setGender(user.getGender());
-        user1.setMaritalStatus(user.getMaritalStatus());
-        user1.setBloodGroup(user.getBloodGroup());
-        user1.setPassword(user.getPassword());
-        userRepo.save(user1);
-        return new UserDto(user1.getId(), user1.getFirstName(),user1.getLastName(),user1.getMiddleName(),user1.getPhoneNumber(),user1.getEmail(),user1.getDateOfBirth(),user1.getEmployeeNumber(),user1.getBloodGroup(),user1.getGender());
-
+        Optional<User> user2 = userRepo.findById(userId);
+        if(user2.isPresent()) {
+            User user1 = user2.get();
+            user1.setFirstName(userRequest.getFirstName());
+            user1.setLastName(userRequest.getLastName());
+            user1.setMiddleName(userRequest.getMiddleName());
+            user1.setPhoneNumber(userRequest.getPhoneNumber());
+            user1.setEmail(userRequest.getEmail());
+            user1.setDateOfBirth(userRequest.getDateOfBirth());
+            user1.setGender(userRequest.getGender());
+            user1.setBloodGroup(userRequest.getBloodGroup());
+            user1.setPassword(userRequest.getPassword());
+            userRepo.save(user1);
+            return new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender());
+        }
+        else{
+            throw new UserNotFoundException(USERNOTFOUND + userId);
+        }
     }
 
     @Override
     public UserDto getUserById(String userId) {
-        User user1 = userRepo.findById(userId).get();
-        return new UserDto(user1.getId(), user1.getFirstName(),user1.getLastName(),user1.getMiddleName(),user1.getPhoneNumber(),user1.getEmail(),user1.getDateOfBirth(),user1.getEmployeeNumber(),user1.getBloodGroup(),user1.getGender());
+
+        Optional<User> user = userRepo.findById(userId);
+
+        if (user.isPresent()) {
+            User user1 = user.get();
+            return new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender());
+        }
+        else{
+            throw new UserNotFoundException(USERNOTFOUND + userId);
+        }
     }
 
 }
