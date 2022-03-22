@@ -40,7 +40,11 @@ public class UserServiceImpl implements UserService {
         return userDtos;
     }
 
-    
+    @Override
+    public String deleteUser(String userId) {
+        userRepo.deleteById(userId);
+        return deleteCustomer;
+    }
 
     @Override
     public UserDto updateUser(User user, String userId) {
