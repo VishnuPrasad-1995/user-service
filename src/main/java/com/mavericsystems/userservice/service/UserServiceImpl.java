@@ -41,9 +41,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsers(int page, int pageSize) {
-
-            Page<User> users = userRepo.findAll(PageRequest.of(page, pageSize));
+    public List<UserDto> getUsers(Integer page, Integer pageSize) {
+            if(page==null){
+                page=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            Page<User> users = userRepo.findAll(PageRequest.of(page-1, pageSize));
             List<UserDto> userDtoList = new ArrayList<>();
             for (User user1 : users) {
                 userDtoList.add(new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender()));
