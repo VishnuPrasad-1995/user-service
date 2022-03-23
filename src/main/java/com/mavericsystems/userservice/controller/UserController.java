@@ -20,8 +20,8 @@ public class UserController {
     @Autowired
     UserService userService;
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(@QueryParam("page") int page, @QueryParam("pageSize") int pageSize){
-       return new ResponseEntity<>(userService.getUsers(page, pageSize),HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getUsers(@QueryParam("page") Integer page, @QueryParam("pageSize") Integer pageSize){
+        return new ResponseEntity<>(userService.getUsers(page, pageSize),HttpStatus.OK);
     }
 
     @PostMapping
@@ -43,8 +43,8 @@ public class UserController {
         return new ResponseEntity<> (userService.deleteUser(userId), HttpStatus.OK);
     }
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("userId") String userId){
-        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.FOUND);
+    public UserDto getUserById(@PathVariable("userId") String userId){
+        return userService.getUserById(userId);
     }
 
 

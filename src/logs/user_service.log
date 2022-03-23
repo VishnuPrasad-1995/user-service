@@ -501,3 +501,4 @@ java.lang.IllegalStateException: Optional int parameter 'page' is present but ca
 2022-03-23 16:28:40.267  INFO 20580 --- [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1648033120266, current=DOWN, previous=UP]
 2022-03-23 16:28:40.269  INFO 20580 --- [DiscoveryClient-InstanceInfoReplicator-0] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_USER-SERVICE/MDB22LT465.mavericsystems.lan:user-service:3005: registering service...
 2022-03-23 16:28:40.441  INFO 20580 --- [DiscoveryClient-InstanceInfoReplicator-0] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_USER-SERVICE/MDB22LT465.mavericsystems.lan:user-service:3005 - registration status: 204
+
