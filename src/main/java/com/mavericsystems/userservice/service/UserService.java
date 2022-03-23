@@ -14,4 +14,5 @@ public interface UserService {
     List<UserDto> getUsers(Integer page, Integer pageSize);
     UserDto updateUser(UserRequest userRequest, String userId);
     UserDto getUserById(String userId);
+    UserDto getUserDetailsByEmail(String emailId);
 }

@@ -109,4 +109,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserDto getUserDetailsByEmail(String emailId) {
+        Optional<User> user = userRepo.findByEmail(emailId);
+
+        if (user.isPresent()) {
+            User user1 = user.get();
+            return new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender());
+        }
+        else{
+            throw new UserNotFoundException(USERNOTFOUND + emailId);
+        }
+    }
+
 }
