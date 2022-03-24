@@ -2,6 +2,7 @@ package com.mavericsystems.userservice.service;
 
 import com.mavericsystems.userservice.dto.UserDto;
 import com.mavericsystems.userservice.dto.UserRequest;
+import com.mavericsystems.userservice.model.User;
 
 
 import java.util.List;

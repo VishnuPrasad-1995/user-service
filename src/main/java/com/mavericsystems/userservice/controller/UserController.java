@@ -3,6 +3,7 @@ package com.mavericsystems.userservice.controller;
 import com.mavericsystems.userservice.dto.UserDto;
 import com.mavericsystems.userservice.dto.UserRequest;
 import com.mavericsystems.userservice.exception.CustomCreateUserException;
+import com.mavericsystems.userservice.model.User;
 import com.mavericsystems.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserRequest userRequest){
+
         try {
             return new ResponseEntity<>(userService.createUser(userRequest), HttpStatus.CREATED);
         }

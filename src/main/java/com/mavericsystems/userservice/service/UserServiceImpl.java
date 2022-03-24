@@ -2,6 +2,7 @@ package com.mavericsystems.userservice.service;
 
 import com.mavericsystems.userservice.dto.UserDto;
 import com.mavericsystems.userservice.dto.UserRequest;
+import com.mavericsystems.userservice.exception.EmailAlreadyExistException;
 import com.mavericsystems.userservice.exception.UserNotFoundException;
 import com.mavericsystems.userservice.model.User;
 import com.mavericsystems.userservice.repo.UserRepo;
@@ -24,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserRequest userRequest) {
+        if(userRepo.findByEmail(userRequest.getEmail()).isPresent()){
+            throw new EmailAlreadyExistException(EMAILALREADYEXIST);
+        }
         User user1 = new User();
         user1.setFirstName(userRequest.getFirstName());
         user1.setLastName(userRequest.getLastName());
