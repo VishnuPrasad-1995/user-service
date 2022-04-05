@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequest {
+    private String id;
     @NotBlank(message = "First name must not be blank")
     @NotNull(message = "First name should not null")
     private String firstName;

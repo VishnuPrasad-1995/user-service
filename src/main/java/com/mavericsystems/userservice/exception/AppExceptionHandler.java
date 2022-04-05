@@ -17,14 +17,6 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
-
-    @ExceptionHandler(CustomCreateUserException.class)
-    ResponseEntity<ApiError> customerNotFoundHandler(Exception exception, ServletWebRequest request) {
-        ApiError apiError = new ApiError();
-        apiError.setMessage(exception.getLocalizedMessage());
-        apiError.setCode(HttpStatus.BAD_REQUEST.toString());
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-    }
     @ExceptionHandler(UserNotFoundException.class)
     ResponseEntity<ApiError> userNotFoundHandler(Exception exception, ServletWebRequest request) {
         ApiError apiError = new ApiError();
@@ -33,8 +25,16 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserIdMismatchException.class)
+    ResponseEntity<ApiError> userIdMismatchHandler(Exception exception, ServletWebRequest request) {
+        ApiError apiError = new ApiError();
+        apiError.setMessage(exception.getLocalizedMessage());
+        apiError.setCode(HttpStatus.BAD_REQUEST.toString());
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(EmailAlreadyExistException.class)
-    ResponseEntity<ApiError> EmailAlreadyExistHandler(Exception exception, ServletWebRequest request) {
+    ResponseEntity<ApiError> emailAlreadyExistHandler(Exception exception, ServletWebRequest request) {
         ApiError apiError = new ApiError();
         apiError.setMessage(exception.getLocalizedMessage());
         apiError.setCode(HttpStatus.BAD_REQUEST.toString());

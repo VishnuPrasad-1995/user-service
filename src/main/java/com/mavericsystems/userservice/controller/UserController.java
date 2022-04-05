@@ -2,8 +2,7 @@ package com.mavericsystems.userservice.controller;
 
 import com.mavericsystems.userservice.dto.UserDto;
 import com.mavericsystems.userservice.dto.UserRequest;
-import com.mavericsystems.userservice.exception.CustomCreateUserException;
-import com.mavericsystems.userservice.model.User;
+import com.mavericsystems.userservice.exception.UserIdMismatchException;
 import com.mavericsystems.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 import java.util.List;
+
+import static com.mavericsystems.userservice.constant.UserConstant.USERIDMISMATCH;
 
 
 @RestController
@@ -27,17 +28,14 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserRequest userRequest){
-
-        try {
             return new ResponseEntity<>(userService.createUser(userRequest), HttpStatus.CREATED);
-        }
-        catch (Exception e){
-            throw new CustomCreateUserException("Syntax Error");
-        }
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserRequest userRequest, @PathVariable("userId") String userId) {
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable("userId") String userId) {
+        if(!(userRequest.getId().equals(userId))){
+            throw new UserIdMismatchException(USERIDMISMATCH);
+        }
         return new ResponseEntity<>(userService.updateUser(userRequest, userId), HttpStatus.OK);
     }
     @DeleteMapping("/{userId}")
