@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UserIdMismatchException.class)
+    @ExceptionHandler({UserIdMismatchException.class, EmailAlreadyExistException.class})
     ResponseEntity<ApiError> userIdMismatchHandler(Exception exception, ServletWebRequest request) {
         ApiError apiError = new ApiError();
         apiError.setMessage(exception.getLocalizedMessage());
@@ -33,29 +34,21 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(EmailAlreadyExistException.class)
-    ResponseEntity<ApiError> emailAlreadyExistHandler(Exception exception, ServletWebRequest request) {
-        ApiError apiError = new ApiError();
-        apiError.setMessage(exception.getLocalizedMessage());
-        apiError.setCode(HttpStatus.BAD_REQUEST.toString());
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-    }
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatus status,
                                                                   WebRequest request) {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-            List<String> errors = fieldErrors.stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.toList());
-            ApiError apiError = new ApiError();
-            apiError.setCode(String.valueOf(status.value()));
-            apiError.setMessage(String.valueOf(errors));
-            return new ResponseEntity<>(apiError, headers, HttpStatus.BAD_REQUEST);
+        List<String> errors = fieldErrors.stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+        ApiError apiError = new ApiError();
+        apiError.setCode(String.valueOf(status.value()));
+        apiError.setMessage(String.valueOf(errors));
+        return new ResponseEntity<>(apiError, headers, HttpStatus.BAD_REQUEST);
 
 
     }
-
 
 
 }

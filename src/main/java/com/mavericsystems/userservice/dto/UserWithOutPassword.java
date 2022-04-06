@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
-public class UserDto {
+public class UserWithOutPassword {
     private String id;
     private String firstName;
     private String lastName;

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDate;
 
 @Document(collection = "User")
@@ -27,9 +28,4 @@ public class User {
     private String employeeNumber;
     private BloodGroup bloodGroup;
     private String password;
-
-    public User(String firstName, String lastName, String middleName, String phoneNumber, String email, LocalDate dateOfBirth, Gender gender) {
-    }
-
-
 }

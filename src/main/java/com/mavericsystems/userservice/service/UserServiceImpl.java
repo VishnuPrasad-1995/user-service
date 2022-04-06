@@ -1,6 +1,6 @@
 package com.mavericsystems.userservice.service;
 
-import com.mavericsystems.userservice.dto.UserDto;
+import com.mavericsystems.userservice.dto.UserWithOutPassword;
 import com.mavericsystems.userservice.dto.UserRequest;
 import com.mavericsystems.userservice.exception.EmailAlreadyExistException;
 import com.mavericsystems.userservice.exception.UserNotFoundException;
@@ -24,106 +24,94 @@ public class UserServiceImpl implements UserService {
     UserRepo userRepo;
 
     @Override
-    public UserDto createUser(UserRequest userRequest) {
-        if(userRepo.findByEmail(userRequest.getEmail()).isPresent()){
-            throw new EmailAlreadyExistException(EMAILALREADYEXIST);
+    public UserWithOutPassword createUser(UserRequest userRequest) {
+        if (userRepo.findByEmail(userRequest.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistException(EMAIL_ALREADY_EXIST + userRequest.getEmail());
         }
-        User user1 = new User();
-        user1.setFirstName(userRequest.getFirstName());
-        user1.setLastName(userRequest.getLastName());
-        user1.setMiddleName(userRequest.getMiddleName());
-        user1.setPhoneNumber(userRequest.getPhoneNumber());
-        user1.setEmail(userRequest.getEmail());
-        user1.setDateOfBirth(userRequest.getDateOfBirth());
-        user1.setGender(userRequest.getGender());
-        user1.setEmployeeNumber(userRequest.getEmployeeNumber());
-        user1.setBloodGroup(userRequest.getBloodGroup());
-        user1.setPassword(userRequest.getPassword());
-        user1 = userRepo.save(user1);
-        return new UserDto(user1.getId(), user1.getFirstName(),user1.getLastName(),user1.getMiddleName(),user1.getPhoneNumber(),user1.getEmail(),user1.getDateOfBirth(),user1.getEmployeeNumber(),user1.getBloodGroup(),user1.getGender());
-
+        User user = new User();
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setMiddleName(userRequest.getMiddleName());
+        user.setPhoneNumber(userRequest.getPhoneNumber());
+        user.setEmail(userRequest.getEmail());
+        user.setDateOfBirth(userRequest.getDateOfBirth());
+        user.setGender(userRequest.getGender());
+        user.setEmployeeNumber(userRequest.getEmployeeNumber());
+        user.setBloodGroup(userRequest.getBloodGroup());
+        user.setPassword(userRequest.getPassword());
+        user = userRepo.save(user);
+        return new UserWithOutPassword(user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getPhoneNumber(), user.getEmail(), user.getDateOfBirth(), user.getEmployeeNumber(), user.getBloodGroup(), user.getGender());
     }
 
     @Override
-    public List<UserDto> getUsers(Integer page, Integer pageSize) {
-            if(page==null){
-                page=1;
-            }
-            if(pageSize==null){
-                pageSize=10;
-            }
-            Page<User> users = userRepo.findAll(PageRequest.of(page-1, pageSize));
-            List<UserDto> userDtoList = new ArrayList<>();
-            for (User user1 : users) {
-                userDtoList.add(new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender()));
-            }
-            if(userDtoList.isEmpty()){
-                throw new UserNotFoundException(NOUSERFOUND);
-            }
-            return userDtoList;
-
+    public List<UserWithOutPassword> getUsers(Integer page, Integer pageSize) {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 10;
+        }
+        Page<User> users = userRepo.findAll(PageRequest.of(page - 1, pageSize));
+        List<UserWithOutPassword> userWithOutPasswordList = new ArrayList<>();
+        for (User user : users) {
+            userWithOutPasswordList.add(new UserWithOutPassword(user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getPhoneNumber(), user.getEmail(), user.getDateOfBirth(), user.getEmployeeNumber(), user.getBloodGroup(), user.getGender()));
+        }
+        if (userWithOutPasswordList.isEmpty()) {
+            throw new UserNotFoundException(NO_USER_FOUND);
+        }
+        return userWithOutPasswordList;
     }
 
     @Override
     public String deleteUser(String userId) {
         try {
             userRepo.deleteById(userId);
-            return DELETEUSER;
-        }
-        catch (Exception e){
-            throw new UserNotFoundException(USERNOTFOUND + userId);
-        }
-
-    }
-
-    @Override
-    public UserDto updateUser(UserRequest userRequest, String userId) {
-
-        Optional<User> user2 = userRepo.findById(userId);
-        if(user2.isPresent()) {
-            User user1 = user2.get();
-            user1.setFirstName(userRequest.getFirstName());
-            user1.setLastName(userRequest.getLastName());
-            user1.setMiddleName(userRequest.getMiddleName());
-            user1.setPhoneNumber(userRequest.getPhoneNumber());
-            user1.setEmail(userRequest.getEmail());
-            user1.setDateOfBirth(userRequest.getDateOfBirth());
-            user1.setGender(userRequest.getGender());
-            user1.setBloodGroup(userRequest.getBloodGroup());
-            user1.setPassword(userRequest.getPassword());
-            userRepo.save(user1);
-            return new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender());
-        }
-        else{
-            throw new UserNotFoundException(USERNOTFOUND + userId);
+            return DELETE_USER;
+        } catch (Exception e) {
+            throw new UserNotFoundException(USER_NOT_FOUND + userId);
         }
     }
 
     @Override
-    public UserDto getUserById(String userId) {
-
-        Optional<User> user = userRepo.findById(userId);
-
-        if (user.isPresent()) {
-            User user1 = user.get();
-            return new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender());
-        }
-        else{
-            throw new UserNotFoundException(USERNOTFOUND + userId);
+    public UserWithOutPassword updateUser(UserRequest userRequest, String userId) {
+        Optional<User> userOptional = userRepo.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setFirstName(userRequest.getFirstName());
+            user.setLastName(userRequest.getLastName());
+            user.setMiddleName(userRequest.getMiddleName());
+            user.setPhoneNumber(userRequest.getPhoneNumber());
+            user.setEmail(userRequest.getEmail());
+            user.setDateOfBirth(userRequest.getDateOfBirth());
+            user.setGender(userRequest.getGender());
+            user.setBloodGroup(userRequest.getBloodGroup());
+            user.setPassword(userRequest.getPassword());
+            userRepo.save(user);
+            return new UserWithOutPassword(user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getPhoneNumber(), user.getEmail(), user.getDateOfBirth(), user.getEmployeeNumber(), user.getBloodGroup(), user.getGender());
+        } else {
+            throw new UserNotFoundException(USER_NOT_FOUND + userId);
         }
     }
 
     @Override
-    public UserDto getUserDetailsByEmail(String emailId) {
-        Optional<User> user = userRepo.findByEmail(emailId);
-
-        if (user.isPresent()) {
-            User user1 = user.get();
-            return new UserDto(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getMiddleName(), user1.getPhoneNumber(), user1.getEmail(), user1.getDateOfBirth(), user1.getEmployeeNumber(), user1.getBloodGroup(), user1.getGender());
-        }
-        else{
-            throw new UserNotFoundException(USERNOTFOUND + emailId);
+    public UserWithOutPassword getUserById(String userId) {
+        Optional<User> userOptional = userRepo.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return new UserWithOutPassword(user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getPhoneNumber(), user.getEmail(), user.getDateOfBirth(), user.getEmployeeNumber(), user.getBloodGroup(), user.getGender());
+        } else {
+            throw new UserNotFoundException(USER_NOT_FOUND + userId);
         }
     }
 
+    @Override
+    public UserWithOutPassword getUserDetailsByEmail(String emailId) {
+        Optional<User> userOptional = userRepo.findByEmail(emailId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return new UserWithOutPassword(user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getPhoneNumber(), user.getEmail(), user.getDateOfBirth(), user.getEmployeeNumber(), user.getBloodGroup(), user.getGender());
+        } else {
+            throw new UserNotFoundException(USER_NOT_FOUND + emailId);
+        }
+    }
 }
