@@ -43,35 +43,21 @@ class UserServiceTest {
     void testCreateUser() {
         UserWithOutPassword userWithOutPassword = createOneUserToResponse();
         UserRequest userRequest = createOneUserRequestToPost();
-        User user = new User();
-        user.setFirstName("firstTest");
-        user.setMiddleName("J");
-        user.setLastName("S");
-        user.setPhoneNumber("9090909090");
-        user.setEmail("prabhu@mail.com");
-        user.setDateOfBirth(LocalDate.of(1997, 03, 23));
-        user.setEmployeeNumber("12345");
-        user.setBloodGroup(BloodGroup.O_POS);
-        user.setGender(Gender.MALE);
-        user.setPassword("1234");
+        User user = createOneUser();
 
         when(userRepo.save(any(User.class))).thenReturn(user);
         User savedUser = userRepo.save(user);
         when(service.createUser(userRequest)).thenReturn(userWithOutPassword);
-        assertThat(savedUser.getFirstName()).isNotNull();
         assertThat(savedUser.getEmail()).isEqualTo("prabhu@mail.com");
     }
 
     @Test
     void testExceptionThrownWhenEmailAlreadyRegistered() {
-        User user = createOneUserToCheck();
         User userToUpdate = createOneUserToUpdate();
         UserRequest userRequest = new UserRequest();
         Optional<User> ofResult = Optional.of(userToUpdate);
-        when(this.userRepo.save((User) any())).thenReturn(user);
         when(this.userRepo.findByEmail((String) any())).thenReturn(ofResult);
         assertThrows(EmailAlreadyExistException.class, () -> this.service.createUser(userRequest));
-        verify(this.userRepo).findByEmail((String) any());
     }
 
     @Test
@@ -145,10 +131,8 @@ class UserServiceTest {
         ArrayList<User> users = new ArrayList<>();
         users.add(user);
         PageImpl<User> pageImpl = new PageImpl<>(users);
-
         when(this.userRepo.findAll((org.springframework.data.domain.Pageable) any())).thenReturn(pageImpl);
         assertEquals(1, this.service.getUsers(1, 3).size());
-        verify(this.userRepo).findAll((org.springframework.data.domain.Pageable) any());
     }
 
     private UserWithOutPassword createOneUserToResponse() {
@@ -261,5 +245,19 @@ class UserServiceTest {
 
         userWithOutPasswordList.add(userWithOutPassword);
         return userWithOutPasswordList;
+    }
+    private User createOneUser() {
+        User user = new User();
+        user.setFirstName("firstTest");
+        user.setMiddleName("J");
+        user.setLastName("S");
+        user.setPhoneNumber("9090909090");
+        user.setEmail("prabhu@mail.com");
+        user.setDateOfBirth(LocalDate.of(1997, 03, 23));
+        user.setEmployeeNumber("12345");
+        user.setBloodGroup(BloodGroup.O_POS);
+        user.setGender(Gender.MALE);
+        user.setPassword("1234");
+        return user;
     }
 }
